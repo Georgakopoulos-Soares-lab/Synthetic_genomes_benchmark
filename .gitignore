@@ -35,3 +35,6 @@ non-B_gfa/bin/
 *.a
 *.pyc
 __pycache__/
+
+# external tools build dir
+non-B_gfa/
