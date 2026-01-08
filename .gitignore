@@ -19,3 +19,19 @@ environment.local.yml
 
 # big / external
 data/
+
+# non-B_gfa build artifacts / binaries
+non-B_gfa/gfa
+non-B_gfa/*.o
+non-B_gfa/*.a
+non-B_gfa/*.so
+non-B_gfa/*.out
+non-B_gfa/build/
+non-B_gfa/bin/
+
+# generic compiled stuff
+*.o
+*.so
+*.a
+*.pyc
+__pycache__/
