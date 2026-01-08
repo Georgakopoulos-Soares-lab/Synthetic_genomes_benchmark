@@ -4,7 +4,7 @@
 
 ```bash
 conda env create -f environment.yml
-conda activate nonbdna
+conda activate syn_bench
 
 #If the environment already exists:
 

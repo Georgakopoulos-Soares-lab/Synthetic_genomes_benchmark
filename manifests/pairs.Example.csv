@@ -1,0 +1,3 @@
+id,orig,syn
+pair_001,data/orig/EXAMPLE_TAG/sequence_1.fa,data/syn/EXAMPLE_TAG/sequence_1.fa
+pair_002,data/orig/EXAMPLE_TAG/sequence_2.fa,data/syn/EXAMPLE_TAG/sequence_2.fa
