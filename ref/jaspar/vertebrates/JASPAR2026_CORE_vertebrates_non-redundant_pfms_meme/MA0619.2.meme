@@ -1,0 +1,20 @@
+MEME version 4
+
+ALPHABET= ACGT
+
+strands: + -
+
+Background letter frequencies
+A 0.25 C 0.25 G 0.25 T 0.25
+
+MOTIF MA0619.2 LIN54
+letter-probability matrix: alength= 4 w= 7 nsites= 999 E= 0
+ 0.000000  0.000000  0.000000  1.000000
+ 0.000000  0.000000  0.000000  1.000000
+ 0.000000  0.212000  0.000000  0.788000
+ 0.438000  0.000000  0.562000  0.000000
+ 1.000000  0.000000  0.000000  0.000000
+ 1.000000  0.000000  0.000000  0.000000
+ 0.104000  0.211000  0.000000  0.685000
+URL http://jaspar.elixir.no/matrix/MA0619.2
+

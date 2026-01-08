@@ -1,0 +1,19 @@
+MEME version 4
+
+ALPHABET= ACGT
+
+strands: + -
+
+Background letter frequencies
+A 0.25 C 0.25 G 0.25 T 0.25
+
+MOTIF MA0900.3 HOXA2
+letter-probability matrix: alength= 4 w= 6 nsites= 60585 E= 0
+ 0.000000  0.060015  0.000000  0.939985
+ 0.693129  0.301805  0.005066  0.000000
+ 1.000000  0.000000  0.000000  0.000000
+ 0.000000  0.000000  0.000000  1.000000
+ 0.000000  0.000000  0.000000  1.000000
+ 0.965221  0.000000  0.034779  0.000000
+URL http://jaspar.elixir.no/matrix/MA0900.3
+
