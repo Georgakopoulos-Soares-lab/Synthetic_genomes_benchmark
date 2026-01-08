@@ -1,0 +1,21 @@
+# outputs
+results/
+logs/
+tmp/
+**/__pycache__/
+**/*.pyc
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# envs / conda
+.env
+.venv/
+*.conda
+*.mamba
+environment.local.yml
+
+# big / external
+data/
