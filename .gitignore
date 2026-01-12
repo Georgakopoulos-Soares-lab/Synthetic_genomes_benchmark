@@ -5,6 +5,10 @@ tmp/
 **/__pycache__/
 **/*.pyc
 
+#metrics
+metrics/
+
+
 # OS/editor
 .DS_Store
 .vscode/
