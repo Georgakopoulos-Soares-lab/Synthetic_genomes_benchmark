@@ -1,0 +1,38 @@
+run:
+  genome_tag: Human
+  seed: 1337
+  force: false
+
+paths:
+  ref_fasta_gz: /path/to/reference.fna.gz
+  outdir: /path/to/output/generated/Human
+  logroot: /path/to/output/logs
+
+windows:
+  n_windows: 40
+  window_len: 300000
+  min_gap: 5000
+  n_threshold: 0.10
+  primary_contigs_only: true
+
+generation:
+  model_name: evo2_7b
+  temperature: 1.0
+  top_k: 4
+  n_gpus: 4
+  gpu_ids: [0, 1, 2, 3]
+  disable_gbif: true
+  phylo_tag: "|D__ANIMALIA;P__CHORDATA;...|"
+
+apptainer:
+  sif: /path/to/evo2.sif
+  hf_cache: /path/to/huggingface_cache
+  repo_root: /absolute/path/to/cloned/github/repo
+  binds:
+    - "/scratch:/scratch"
+  env:
+    PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
+    PYTHONNOUSERSITE: "1"
+    HF_HOME: "/root/.cache/huggingface"
+    HF_HUB_CACHE: "/root/.cache/huggingface/.hf-cache"
+    TRANSFORMERS_CACHE: "/root/.cache/huggingface/transformers"
