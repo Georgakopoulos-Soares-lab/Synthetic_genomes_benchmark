@@ -34,3 +34,9 @@ See `environment.yml` and `docs/INSTALL.md` for setup instructions.
 
 ## Synthetic genome generation (Evo2)
 Generation is kept separate from the benchmarks (see `generation/`). It samples windows from a reference FASTA and generates synthetic sequences using Evo2 via an Apptainer container, producing a `pairs.<TAG>.csv` manifest compatible with the benchmarks.
+
+## Reference
+
+If you have found this work useful, please cite:
+
+Tzanakakis, A., Mouratidis, I., & Georgakopoulos-Soares, I. (2026). Fundamental limitations of genomic language models for realistic sequence generation. bioRxiv. https://doi.org/10.64898/2026.01.17.700093
