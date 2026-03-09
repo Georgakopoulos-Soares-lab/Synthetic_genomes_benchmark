@@ -215,7 +215,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # nullomers
 
-    p.add_argument("--nullomers-k", type=int, default=9, help="k for nullomers (KMC).")
+    p.add_argument("--nullomers-k", type=int, default=7, help="k for nullomers (KMC).")
     p.add_argument("--threads", type=int, default=0, help="Threads for external tools (0=auto).")
 
     # tfbs (FIMO)
@@ -233,6 +233,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--nonbdna", action="store_true", help="Run non-B DNA benchmarks (ZSeeker + G4Hunter + non-B GFA + aggregate).")
     p.add_argument("--gfa-bin", default="non-B_gfa/gfa", help="Path to gfa binary (default repo-relative).")
     p.add_argument("--zseeker-jobs", type=int, default=1, help="Threads for ZSeeker.")
+    p.add_argument("--nonbdna-ymax-bp", type=float, default=None, help="y-max for nonbdna bp_covered plot")
 
     return p
 
@@ -409,11 +410,17 @@ def main() -> None:
         ], cwd=root)
 
         print(f"[ok] nonbdna: wrote metrics under {nonbdna_out / 'metrics'}")
-        run_cmd([
+
+        cmd = [
             python_exe(),
             str(script_path(root, "scripts/benchmarks/nonbdna_significance_plot.py")),
             "--outdir", str(nonbdna_out),
-        ], cwd=root)
+        ]
+        if args.nonbdna_ymax_bp is not None:
+            cmd += ["--ymax-bp", str(args.nonbdna_ymax_bp)]
 
+        run_cmd(cmd, cwd=root)
+
+                                                                                                                                                                                                                                                                                                                                                                                                                            
 if __name__ == "__main__":
     main()
