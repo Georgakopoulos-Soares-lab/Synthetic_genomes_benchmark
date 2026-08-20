@@ -163,6 +163,7 @@ def run_nullomers(
     k: int,
     threads: int,
     max_pairs: int,
+    count_mode: str = "canonical",
 ) -> None:
     nullomers = script_path(root, "scripts/benchmarks/nullomers.py")
 
@@ -172,12 +173,35 @@ def run_nullomers(
         "--outdir", str(outdir),
         "--k", str(k),
         "--threads", str(threads),
+        "--count-mode", count_mode,
     ]
     if max_pairs and max_pairs > 0:
         cmd += ["--max-pairs", str(max_pairs)]
 
     run_cmd(cmd, cwd=root)
 
+
+
+def run_sequence_benchmark(
+    root: Path,
+    script: str,
+    manifest: Path,
+    outdir: Path,
+    tag: str,
+    extra: list[str],
+    max_pairs: int,
+) -> None:
+    """Run one of the pure-Python benchmarks (no external tools required)."""
+    cmd = [
+        python_exe(), str(script_path(root, f"scripts/benchmarks/{script}")),
+        "--manifest", str(manifest),
+        "--outdir", str(outdir),
+        "--label", tag,
+    ]
+    if max_pairs and max_pairs > 0:
+        cmd += ["--max-pairs", str(max_pairs)]
+    cmd += extra
+    run_cmd(cmd, cwd=root)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -216,6 +240,9 @@ def build_parser() -> argparse.ArgumentParser:
     # nullomers
 
     p.add_argument("--nullomers-k", type=int, default=7, help="k for nullomers (KMC).")
+    p.add_argument("--nullomers-count-mode", choices=["canonical", "both-strands"],
+                   default="canonical",
+                   help="k-mer counting mode, which sets the nullomer denominator.")
     p.add_argument("--threads", type=int, default=0, help="Threads for external tools (0=auto).")
 
     # tfbs (FIMO)
@@ -229,6 +256,26 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tfbs-site-p", type=float, default=1e-4, help="Site-level p-value filter for aggregation.")
     p.add_argument("--tfbs-site-q", type=float, default=1.0, help="Site-level q-value filter for aggregation.")
     p.add_argument("--tfbs-gzip-tsv", action="store_true", help="Compress fimo.tsv to fimo.tsv.gz.")
+
+    # sequence-level benchmarks (pure Python, no external tools)
+    p.add_argument("--composition", action="store_true",
+                   help="Per-window composition + paired divergence (fast; run this first).")
+    p.add_argument("--detectability", action="store_true",
+                   help="Shallow k-mer/Markov classifier AUROC (no GPU).")
+    p.add_argument("--natural-baseline", action="store_true",
+                   help="Calibrate divergence against natural-natural variation.")
+    p.add_argument("--context-decay", action="store_true",
+                   help="AUROC vs distance from the conditioning seed. Needs "
+                        "--seed-len or a seed_len column in the manifest.")
+    p.add_argument("--seed-len", type=int, default=0,
+                   help="Conditioning seed length in bp (for --context-decay).")
+    p.add_argument("--bin-size", type=int, default=20000,
+                   help="Distance bin width in bp (for --context-decay).")
+    p.add_argument("--null-check", action="store_true",
+                   help="Add the natural-vs-natural negative control to "
+                        "--natural-baseline and --detectability.")
+    p.add_argument("--data-root", default=None,
+                   help="Prefix for relative FASTA paths in the manifest.")
 
     p.add_argument("--nonbdna", action="store_true", help="Run non-B DNA benchmarks (ZSeeker + G4Hunter + non-B GFA + aggregate).")
     p.add_argument("--gfa-bin", default="non-B_gfa/gfa", help="Path to gfa binary (default repo-relative).")
@@ -249,11 +296,25 @@ def main() -> None:
         args.nullomers = True
         args.tfbs = True
         args.nonbdna = True
+        args.composition = True
+        args.detectability = True
+        args.natural_baseline = True
+        # context decay is not included: it only applies to sequences generated
+        # from a natural prompt, and needs that prompt's length.
 
 
 
-    if not args.spectra and not args.fcgr and not args.nullomers and not args.tfbs and not args.nonbdna:
-        raise SystemExit("Nothing to run. Use --spectra, --fcgr, --nullomers, --tfbs, --nonbdna or --all.")
+    selected = [args.spectra, args.fcgr, args.nullomers, args.tfbs, args.nonbdna,
+                args.composition, args.detectability, args.natural_baseline,
+                args.context_decay]
+    if not any(selected):
+        raise SystemExit(
+            "Nothing to run. Use --all, or pick benchmarks:\n"
+            "  no external tools : --composition --detectability "
+            "--natural-baseline --context-decay\n"
+            "  external tools    : --spectra --fcgr --nullomers (KMC) "
+            "--tfbs (FIMO) --nonbdna (ZSeeker/G4Hunter/non-B GFA)"
+        )
 
     manifest = Path(args.manifest).resolve() if args.manifest else find_manifest(root, args.tag)
     if manifest is None or not manifest.exists():
@@ -279,6 +340,47 @@ def main() -> None:
     ensure_dir(tfbs_out)
     ensure_dir(tfbs_fimo_out)
 
+
+    common = ["--data-root", args.data_root] if args.data_root else []
+
+    if args.composition:
+        run_sequence_benchmark(
+            root, "composition.py", manifest,
+            results_root / args.tag / "composition", args.tag,
+            common + ["--fcgr-k", str(args.fcgr_k), "--seed", str(args.seed)],
+            args.max_pairs,
+        )
+
+    if args.detectability:
+        extra = common + ["--seed", str(args.seed)]
+        if args.null_check:
+            extra.append("--null-check")
+        run_sequence_benchmark(
+            root, "detectability.py", manifest,
+            results_root / args.tag / "detectability", args.tag,
+            extra, args.max_pairs,
+        )
+
+    if args.natural_baseline:
+        extra = common + ["--fcgr-k", str(args.fcgr_k), "--seed", str(args.seed)]
+        if args.null_check:
+            extra.append("--null-check")
+        run_sequence_benchmark(
+            root, "natural_baseline.py", manifest,
+            results_root / args.tag / "natural_baseline", args.tag,
+            extra, args.max_pairs,
+        )
+
+    if args.context_decay:
+        extra = common + ["--bin-size", str(args.bin_size),
+                          "--seed", str(args.seed), "--compare-regions"]
+        if args.seed_len > 0:
+            extra += ["--seed-len", str(args.seed_len)]
+        run_sequence_benchmark(
+            root, "context_decay.py", manifest,
+            results_root / args.tag / "context_decay", args.tag,
+            extra, args.max_pairs,
+        )
 
     if args.spectra:
         run_kmer_suite(
@@ -321,6 +423,7 @@ def main() -> None:
             k=args.nullomers_k,
             threads=threads,
             max_pairs=args.max_pairs,
+            count_mode=args.nullomers_count_mode,
         )
 
 

@@ -26,6 +26,14 @@ dependencies:
   - pybedtools
   - pyfaidx
 
+  # parquet output from the non-B DNA aggregation
+  - pyarrow
+
+  # needed by scripts/classifier/ and generation/improve/.
+  # The CPU build is enough for generation/improve/; the deep detector in
+  # scripts/classifier/ wants a GPU build matched to your CUDA version.
+  - pytorch
+
 
   - pip:
       - altair==4.0.0

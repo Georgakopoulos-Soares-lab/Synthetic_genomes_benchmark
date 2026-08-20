@@ -67,3 +67,29 @@ provenance.json
 
 ```txt
 pyyaml>=6.0
+## Trying to improve generation
+
+`generation/improve/` holds the two interventions we tested against the failure
+modes the benchmarks detect. Both are model-agnostic and independent of the
+pipeline above:
+
+- `constrained_decoding.py` — logit constraints at sampling time (homopolymer
+  run penalty, k-mer over-representation penalty), with an `evo2_constrained`
+  context manager that patches Evo 2's sampler in place while keeping its
+  cached-generation loop.
+- `structural_losses.py` — differentiable auxiliary training terms
+  (`homopolymer_loss`, `dinucleotide_kl_loss`) for any autoregressive loop.
+- `run_intervention_demo.py` — trains a small character-level model on your own
+  FASTA and scores a 2x2 design (standard vs auxiliary-loss training, plain vs
+  constrained decoding) using the benchmark metrics.
+
+```bash
+python generation/improve/constrained_decoding.py --self-test
+python generation/improve/structural_losses.py --self-test
+python generation/improve/run_intervention_demo.py --fasta data/Homo_sapiens \
+    --outdir results/interventions --steps 400
+```
+
+See [../docs/BENCHMARKS.md](../docs/BENCHMARKS.md#trying-to-improve-generation)
+for how to read the result. Judge an intervention by detectability, not by the
+statistic it was designed to fix.

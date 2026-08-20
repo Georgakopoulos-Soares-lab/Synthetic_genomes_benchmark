@@ -1,0 +1,66 @@
+cff-version: 1.2.0
+title: Synthetic Genomes Benchmark
+message: >-
+  If you use this software, please cite both the software itself and the paper
+  it accompanies (see preferred-citation below).
+type: software
+authors:
+  - family-names: Tzanakakis
+    given-names: Alexandros
+    affiliation: >-
+      Division of Pharmacology and Toxicology, College of Pharmacy, The
+      University of Texas at Austin, Dell Pediatric Research Institute, Austin,
+      TX 78723, USA
+  - family-names: Mouratidis
+    given-names: Ioannis
+    affiliation: >-
+      Division of Pharmacology and Toxicology, College of Pharmacy, The
+      University of Texas at Austin, Dell Pediatric Research Institute, Austin,
+      TX 78723, USA
+  - family-names: Georgakopoulos-Soares
+    given-names: Ilias
+    affiliation: >-
+      Division of Pharmacology and Toxicology, College of Pharmacy, The
+      University of Texas at Austin, Dell Pediatric Research Institute, Austin,
+      TX 78723, USA
+contact:
+  - family-names: Mouratidis
+    given-names: Ioannis
+  - family-names: Georgakopoulos-Soares
+    given-names: Ilias
+abstract: >-
+  Benchmarks for evaluating generated DNA against matched natural sequence.
+  Covers per-window composition and divergence, calibration of that divergence
+  against natural window-to-window variation, shallow and deep detectability,
+  drift from the conditioning prompt, k-mer spectra, chaos game representation,
+  nullomers, transcription factor binding sites and non-B DNA structure, plus
+  reusable interventions for constraining generation at training and sampling
+  time.
+keywords:
+  - genomics
+  - genomic language models
+  - benchmark
+  - synthetic DNA
+  - sequence generation
+  - non-B DNA
+  - nullomers
+  - k-mer spectra
+license: MIT
+repository-code: >-
+  https://github.com/Georgakopoulos-Soares-lab/Synthetic_genomes_benchmark
+preferred-citation:
+  type: article
+  title: >-
+    Fundamental limitations of genomic language models for realistic sequence
+    generation
+  authors:
+    - family-names: Tzanakakis
+      given-names: Alexandros
+    - family-names: Mouratidis
+      given-names: Ioannis
+    - family-names: Georgakopoulos-Soares
+      given-names: Ilias
+  journal: bioRxiv
+  year: 2026
+  doi: 10.64898/2026.01.17.700093
+  url: https://doi.org/10.64898/2026.01.17.700093

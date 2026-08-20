@@ -2,6 +2,10 @@
 results/
 logs/
 tmp/
+
+# stdout/stderr captured from external tools (g4hunter, zseeker, ...)
+*.stdout.txt
+*.stderr.txt
 **/__pycache__/
 **/*.pyc
 
